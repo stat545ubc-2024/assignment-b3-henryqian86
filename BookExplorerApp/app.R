@@ -78,7 +78,7 @@ ui <- fluidPage(
       # Feature 3: Colour picker for Ratings Distribution plot
       # Purpose: Lets users customize the color of the bars in the Ratings Distribution plot for a personalized experience.
       
-      colourInput("bar_color", "Select Bar Color for Ratings Plot", 
+      colourpicker::colourInput("bar_color", "Select Bar Color for Ratings Plot", 
                   value = "skyblue"),  # Default color
       
       # Feature 4: Display Filtered Count
