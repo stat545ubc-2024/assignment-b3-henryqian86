@@ -13,6 +13,8 @@ library(ggplot2)
 library(colourpicker) 
 library(shinythemes)
 library(shinyjs)
+library(shinyBS)
+library(dplyr)
 
 # Dataset
 books <- data.frame(
@@ -48,53 +50,115 @@ books <- data.frame(
 
 # Define UI
 ui <- fluidPage(
-  useShinyjs(),  
-  theme = shinytheme("flatly"),
-  includeCSS("www/styles.css"),
-  titlePanel("Book Explorer App"),
-  img(src = "books.jpg", alt = "Banner", style = "margin-bottom: 15px;"),
+  useShinyjs(),
+  theme = shinytheme("flatly"),  # Default theme
+  includeCSS("www/styles.css"),  # Custom CSS
   
+  # Google Fonts for better typography
+  tags$head(
+    tags$link(
+      href = "https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Merriweather:wght@300;700&display=swap",
+      rel = "stylesheet"
+    )
+  ),
+  
+  # App Title and Banner
+  titlePanel(
+    h1("Book Explorer App", style = "font-family: 'Merriweather', serif; font-weight: bold; color: #2c3e50; text-align: center;")
+  ),
+  img(
+    src = "books.jpg",
+    alt = "Banner",
+    style = "margin: 15px auto; display: block; width: 60%; border-radius: 10px;"  # Enhanced banner styling
+  ),
   
   sidebarLayout(
     sidebarPanel(
-      # Feature 1: Checkbox filters for Genre and Author
-      # Purpose: Users can select multiple genres and authors to narrow down the books displayed in the table and plots.
-      checkboxGroupInput("genre_filter", "Filter by Genre", 
-                         choices = unique(books$Genre), 
-                         selected = unique(books$Genre)),  # Default: Select all genres
+      h3("Filters", style = "font-family: 'Roboto', sans-serif; color: #2c3e50; text-align: center;"),
       
-      
-      checkboxGroupInput("author_filter", "Filter by Author", 
-                         choices = unique(books$Author), 
-                         selected = unique(books$Author)), 
-      
-      # Feature 2: Year slider for filtering books
-      # Purpose: Allows users to select a range of publication years, helping them focus on books from a specific time period.
-      
-      sliderInput("year_filter", "Select Publication Year Range:",
-                  min = min(books$Year), max = max(books$Year),
-                  value = c(min(books$Year), max(books$Year))),
-      
-      # Feature 3: Colour picker for Ratings Distribution plot
-      # Purpose: Lets users customize the color of the bars in the Ratings Distribution plot for a personalized experience.
-      
-      colourpicker::colourInput("bar_color", "Select Bar Color for Ratings Plot", 
-                  value = "skyblue"),  # Default color
+      # Feature 7: Collapsible Panels for Filters and Customizations
+      # Purpose: Organize inputs into logical sections for a cleaner UI
+      bsCollapse(
+        bsCollapsePanel(
+          "Filters",  # Collapsible Panel for Filters
+          # Feature 1: Checkbox filters for Genre and Author
+          # Purpose: Users can select multiple genres and authors to narrow down the books displayed in the table and plots.
+          checkboxGroupInput("genre_filter", "Filter by Genre", 
+                             choices = unique(books$Genre), 
+                             selected = unique(books$Genre)),  # Default: Select all genres
+          
+          checkboxGroupInput("author_filter", "Filter by Author", 
+                             choices = unique(books$Author), 
+                             selected = unique(books$Author)),
+          
+          # Feature 2: Year slider for filtering books
+          # Purpose: Allows users to select a range of publication years, helping them focus on books from a specific time period.
+          sliderInput("year_filter", "Select Publication Year Range:",
+                      min = min(books$Year), max = max(books$Year),
+                      value = c(min(books$Year), max(books$Year))),
+          style = "primary"
+        ),
+        bsCollapsePanel(
+          "Customizations",  # Collapsible Panel for Customizations
+          # Facet selection for graphs (Genre or Author)
+          # Purpose: Dynamically facet the plots based on user selection of Genre or Author.
+          selectInput("facet_by", "Facet Graphs By:", 
+                      choices = c("Genre", "Author"), 
+                      selected = "Genre"),
+          
+          # Feature 3: Colour picker for Ratings Distribution plot
+          # Purpose: Lets users customize the color of the bars in the Ratings Distribution plot for a personalized experience.
+          colourpicker::colourInput("bar_color", "Select Bar Color for Ratings Plot", 
+                                    value = "skyblue"),
+          style = "info"
+        )
+      ),
       
       # Feature 4: Display Filtered Count
       # Purpose: Shows the number of books that match the filters applied by the user.
-      textOutput("result_count"),  # Display the number of results
+      h4(textOutput("result_count"), style = "color: #27ae60; text-align: center; margin-top: 15px;"),
       
       # Feature 5: Download Button
       # Purpose: Allows users to download the filtered data as a CSV file.
-      downloadButton("download_data", "Download Filtered Data")
+      downloadButton("download_data", "Download Filtered Data", style = "width: 100%; margin-top: 10px;")
     ),
     
     mainPanel(
       tabsetPanel(
-        tabPanel("Book Table", DTOutput("book_table")),
-        tabPanel("Ratings Distribution", plotOutput("rating_plot")),
-        tabPanel("Reviews vs. Ratings", plotOutput("scatter_plot"))
+        tabPanel(
+          "Book Table", 
+          DTOutput("book_table"),
+          style = "padding: 10px;"
+        ),
+        tabPanel(
+          "Ratings Distribution", 
+          plotOutput("rating_plot", height = "400px"),  # Set plot height
+          style = "padding: 10px;"
+        ),
+        tabPanel(
+          "Reviews vs. Ratings", 
+          plotOutput("scatter_plot", height = "400px"),  # Set plot height
+          style = "padding: 10px;"
+        ),
+        tabPanel(
+          "About",  # About Tab
+          # Feature 6: Enhanced "About" Section
+          # Purpose: Provide clear instructions on how to use the app and explain its functionality.
+          h4("About the Book Explorer App", style = "font-family: 'Merriweather', serif; text-align: center;"),
+          p("This app allows you to explore a dataset of popular books by filtering them based on genre, author, and publication year.",
+            style = "font-family: 'Roboto', sans-serif; text-align: justify;"),
+          h4("How to Use This App", style = "font-family: 'Merriweather', serif; text-align: center;"),
+          p("- Use the filters in the sidebar to narrow down your selection of books.", 
+            style = "font-family: 'Roboto', sans-serif; text-align: justify;"),
+          p("- View the filtered results in the 'Book Table' tab.", 
+            style = "font-family: 'Roboto', sans-serif; text-align: justify;"),
+          p("- Visualize the distribution of ratings in the 'Ratings Distribution' tab.", 
+            style = "font-family: 'Roboto', sans-serif; text-align: justify;"),
+          p("- Explore the relationship between reviews and ratings in the 'Reviews vs. Ratings' tab.",
+            style = "font-family: 'Roboto', sans-serif; text-align: justify;"),
+          p("- Download the filtered dataset using the 'Download Filtered Data' button.",
+            style = "font-family: 'Roboto', sans-serif; text-align: justify;")
+        )
       )
     )
   )
@@ -104,22 +168,16 @@ ui <- fluidPage(
 server <- function(input, output) {
   # Reactive Filtered Data
   filtered_data <- reactive({
-    df <- books
+    req(input$genre_filter, input$author_filter, input$year_filter)  # Ensure inputs exist
     
-    # Filter by multiple Genres
-    if (!is.null(input$genre_filter) && length(input$genre_filter) > 0) {
-      df <- subset(df, Genre %in% input$genre_filter)
-    }
-    
-    # Filter by multiple Authors
-    if (!is.null(input$author_filter) && length(input$author_filter) > 0) {
-      df <- subset(df, Author %in% input$author_filter)
-    }
-    
-    # Filter by Year
-    df <- subset(df, Year >= input$year_filter[1] & Year <= input$year_filter[2])
-    
-    return(df)
+    # Feature 8: Filter Data Using tidyverse (Modern Approach)
+    # Purpose: Dynamically filter the dataset based on user inputs.
+    books %>%
+      filter(
+        Genre %in% input$genre_filter,
+        Author %in% input$author_filter,
+        Year >= input$year_filter[1] & Year <= input$year_filter[2]
+      )
   })
   
   # Render Book Table
@@ -127,26 +185,47 @@ server <- function(input, output) {
     datatable(
       filtered_data(),
       options = list(
-        pageLength = 5,  
-        lengthMenu = c(5, 10, 15, 20)  
-      )
+        pageLength = 10,
+        lengthMenu = c(5, 10, 15, 20),
+        autoWidth = TRUE
+      ),
+      class = "table table-striped table-hover"
     )
   })
   
-  # Render Rating Distribution Plot with custom bar color
+  # Render Rating Distribution Plot
   output$rating_plot <- renderPlot({
-    ggplot(filtered_data(), aes(x = Rating)) +
-      geom_histogram(binwidth = 0.1, fill = input$bar_color, color = "black") +  # Dynamic color
-      theme_minimal() +
-      labs(title = "Distribution of Book Ratings", x = "Rating", y = "Count")
+    ggplot(filtered_data(), aes(x = Rating, weight = Reviews)) +
+      geom_bar(fill = input$bar_color, color = "black", alpha = 0.8) +
+      facet_wrap(as.formula(paste("~", input$facet_by))) +
+      theme_minimal(base_size = 14) +
+      labs(
+        title = paste("Ratings Distribution by", input$facet_by),
+        x = "Rating (Weighted by Reviews)",
+        y = "Weighted Count"
+      ) +
+      theme(
+        plot.title = element_text(hjust = 0.5, face = "bold"),
+        axis.title = element_text(face = "bold")
+      )
   })
   
   # Render Reviews vs Ratings Scatterplot
   output$scatter_plot <- renderPlot({
-    ggplot(filtered_data(), aes(x = Rating, y = Reviews)) +
-      geom_point(color = "blue", alpha = 0.7) +
-      theme_minimal() +
-      labs(title = "Reviews vs. Ratings", x = "Rating", y = "Number of Reviews")
+    ggplot(filtered_data(), aes(x = Rating, y = Reviews, size = Reviews)) +
+      geom_point(color = "#3498db", alpha = 0.7) +
+      facet_wrap(as.formula(paste("~", input$facet_by))) +
+      theme_minimal(base_size = 14) +
+      labs(
+        title = paste("Reviews vs. Ratings by", input$facet_by),
+        x = "Rating",
+        y = "Number of Reviews",
+        size = "Number of Reviews"
+      ) +
+      theme(
+        plot.title = element_text(hjust = 0.5, face = "bold"),
+        axis.title = element_text(face = "bold")
+      )
   })
   
   # Display number of results
@@ -159,12 +238,13 @@ server <- function(input, output) {
     }
   })
   
+  # Download Filtered Data
   output$download_data <- downloadHandler(
     filename = function() {
-      paste("filtered_books.csv")  # Name of the downloaded file
+      paste("filtered_books.csv")
     },
     content = function(file) {
-      write.csv(filtered_data(), file, row.names = FALSE)  # Write the filtered data to a CSV file
+      write.csv(filtered_data(), file, row.names = FALSE)
     }
   )
 }
