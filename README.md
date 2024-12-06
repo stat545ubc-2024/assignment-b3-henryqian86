@@ -10,8 +10,8 @@
 
 ## **Description**
 
-The **Book Explorer App** is an interactive tool for exploring and analyzing a dataset of books.
-Users can filter the data, visualize distributions, and download results for further analysis.
+The **Book Explorer App** is an interactive tool for exploring and analyzing a dataset of books.\
+Users can filter the data, visualize distributions, customize aesthetics, and download results for further analysis.\
 This app is designed for book enthusiasts, researchers, and anyone interested in interactive data exploration.
 
 ### **Features**
@@ -27,19 +27,29 @@ This app is designed for book enthusiasts, researchers, and anyone interested in
 
 ------------------------------------------------------------------------
 
+### **New Features Added**
+
+1.  **Facet Graphs by Genre or Author**:
+    -   Dynamically switch between faceting plots by book genre or author to observe patterns in the data.
+2.  **About Section**:
+    -   A dedicated "About" tab was added to provide users with details about the app, its features, and the dataset.
+    -   Offers helpful documentation for users who wish to understand the app's functionality and data sources.
+3.  **Collapsible Panels**:
+    -   Filters and customization options are organized into collapsible panels to enhance usability and maintain a clean layout.
+    -   Improves navigation by reducing visual clutter while retaining quick access to all features.
+
+------------------------------------------------------------------------
+
 ## **Dataset**
 
-The dataset used in this app is a mock dataset of 20 books.
+The dataset used in this app is a mock dataset of 20 books.\
 It includes the following attributes:
 
-\- **Title**: The name of the book.
+-   **Title**: The name of the book.\
+-   **Author**: The author of the book.\
+-   **Genre**: The genre or category of the book.\
+-   **Year**: The publication year.\
+-   **Rating**: Average user rating (on a scale of 1 to 5).\
+-   **Reviews**: The number of reviews received.
 
-\- **Author**: The author of the book.
-
-\- **Genre**: The genre or category of the book.
-
-\- **Year**: The publication year.
-
-\- **Rating**: Average user rating (on a scale of 1 to 5).
-
-\- **Reviews**: The number of reviews received.
+------------------------------------------------------------------------
