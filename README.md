@@ -45,11 +45,11 @@ This app is designed for book enthusiasts, researchers, and anyone interested in
 The dataset used in this app is a mock dataset of 20 books.\
 It includes the following attributes:
 
--   **Title**: The name of the book.\
--   **Author**: The author of the book.\
--   **Genre**: The genre or category of the book.\
--   **Year**: The publication year.\
--   **Rating**: Average user rating (on a scale of 1 to 5).\
+-   **Title**: The name of the book.
+-   **Author**: The author of the book.
+-   **Genre**: The genre or category of the book.
+-   **Year**: The publication year.
+-   **Rating**: Average user rating (on a scale of 1 to 5).
 -   **Reviews**: The number of reviews received.
 
 ------------------------------------------------------------------------
